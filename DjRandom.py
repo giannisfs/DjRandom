@@ -12,6 +12,9 @@ class DjRandom():
     def __init__(self):
         pass
     
+#python changes data inside lists because append just adds a pointer to the same object 
+#so i will change the following function... the copy module should help... 
+#but it seems it is a horrible solution to make new object as often as the most numbered operations.... 
 def stateFulShuffle(seq):
     global SHUFFLESTATE
     Seq = copy.copy(seq)
@@ -29,35 +32,6 @@ def stateFulShuffle(seq):
             print Seq ,'aa'
             random.shuffle(Seq)
     return #SHUFFLESTATE
-
-
-##def stateFulShuffle(seq):
-##    seq = copy.copy(Bseq)
-##    def shuffle(seq):
-##        global SHUFFLESTATE
-##        SHUFFLESTATE.append(copy.copy(seq))
-##        c = 0
-##        while True:
-##            random.shuffle(seq)
-##            iSeq = copy.copy(seq)
-##            if iSeq not in SHUFFLESTATE:
-##                if len(SHUFFLESTATE) > MAXUNIQSTATES:
-##                    del(SHUFFLESTATE)
-##                    SHUFFLESTATE = []
-##                    break
-##                SHUFFLESTATE.append(iSeq)
-##                print iSeq
-##                c =0
-##                yield iSeq
-##                
-##            elif c <= LIMIT:
-##                c += 1
-##            else:
-##                random.shuffle(seq)
-##                print 'BREAK'
-##                break
-##            
-##    return shuffle(seq).next()
 
 
 
