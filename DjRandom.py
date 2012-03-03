@@ -1,39 +1,59 @@
 
-SHUFFLESTATES = []
-MAXUNIQSTATES = 2000
-LIMIT = 40000
-MUSICLIST = range(10)
+states = set()
+MAXRANDOMTHRESHOLD = 12
 
 
 
-import random , copy
+
+
+import random , copy , cPickle
+
 
 class DjRandom():
     def __init__(self):
         pass
+
+
+def SaveShuffleState(state):
+    #hash(stateFulShuffle(x).next().__repr__())
+    state = hash(state.__repr__())
+    File = open("DjRandomShuffle.states","wb")
+    cPickle.dump(state,File)
+    File.close()
+
+def checkIfStateExists(state):
+    File = open("DjRandomShuffle.states","rb")
+    states = cPickle.load(File)
+    File.close()
     
-#python changes data inside lists because append just adds a pointer to the same object 
-#so i will change the following function... the copy module should help... 
-#but it seems it is a horrible solution to make new object as often as the most numbered operations.... 
+    if hash(state.__repr__()) in states:
+        return True
+    
 def stateFulShuffle(seq):
-    global SHUFFLESTATE
-    Seq = copy.copy(seq)
+    try:
+        File = open("DjRandomShuffle.states","rb")
+        states = cPickle.load(File)
+        File.close()        
+    except IOError:
+        File = open("DjRandomShuffle.states","wb")
+        
+        
+    #global states
     counter = 0
-    seen = set()
-    while counter < MAXUNIQSTATES :
-        if Seq in SHUFFLESTATES:
+    while counter < MAXRANDOMTHRESHOLD :
+        # if more than 12 times in a raw , seq happens to exist inside states
+        # that means that generously either randomness has been exausted
+        # either (in other words) there are no more unique sequences left... ;) hell yeah
+        if tuple(seq) in states:
             counter += 1
-            Seq = copy.copy(Seq)
-            random.shuffle(Seq)
-        elif Seq not in SHUFFLESTATES:
-            Seq = copy.copy(Seq)
-            print Seq ,'aa'
-            SHUFFLESTATES.append(Seq)
-            print Seq ,'aa'
-            random.shuffle(Seq)
-    return #SHUFFLESTATE
-
-
+            random.shuffle(seq)
+        elif tuple(seq) not in states:
+            counter = 0
+            states.add(tuple(seq))
+            yield seq
+#HERE signal handler function when application exits in order to save the state
+#http://www.doughellmann.com/PyMOTW/signal/
+    
 
 
 
